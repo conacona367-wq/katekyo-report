@@ -5,6 +5,22 @@ export default function Page() {
   const [text, setText] = useState('')
   const [status, setStatus] = useState('')
 
+  async function format() {
+    setStatus('整形中…')
+    const res = await fetch('/api/format', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+    })
+    if (!res.ok) {
+      setStatus('整形に失敗しました')
+      return
+    }
+    const data = await res.json()
+    setText(data.formatted)
+    setStatus('内容を確認してから送信してください')
+  }
+
   async function send() {
     setStatus('送信中…')
     const res = await fetch('/api/send', {
@@ -24,6 +40,13 @@ export default function Page() {
         rows={10}
         style={{ width: '100%', border: '1px solid #999', padding: 8 }}
       />
+      <button
+        onClick={format}
+        disabled={!text}
+        style={{ marginTop: 8, marginRight: 8, padding: '8px 16px', border: '1px solid #999' }}
+      >
+        AIで整える
+      </button>
       <button
         onClick={send}
         disabled={!text}

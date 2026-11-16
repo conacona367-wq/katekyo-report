@@ -5,6 +5,18 @@ export default function Page() {
   const [text, setText] = useState('')
   const [status, setStatus] = useState('')
 
+  async function load() {
+    setStatus('取り込み中…')
+    const res = await fetch('/api/gmail')
+    if (!res.ok) {
+      setStatus('取り込みに失敗しました')
+      return
+    }
+    const data = await res.json()
+    setText(data.text)
+    setStatus('取り込みました。「AIで整える」を押してください')
+  }
+
   async function format() {
     setStatus('整形中…')
     const res = await fetch('/api/format', {
@@ -40,6 +52,12 @@ export default function Page() {
         rows={10}
         style={{ width: '100%', border: '1px solid #999', padding: 8 }}
       />
+      <button
+        onClick={load}
+        style={{ marginBottom: 8, padding: '8px 16px', border: '1px solid #999' }}
+      >
+        最新の要約を取り込む
+      </button>
       <button
         onClick={format}
         disabled={!text}
